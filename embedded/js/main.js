@@ -283,9 +283,9 @@ class Sensors {
     receiveMessage(nameChannel) {
         if (nameChannel === "consult") {
             if(this.context.redSky === false) {
-                this.context.free[0] = getRandomInt(0, 1);
-                this.context.free[1] = getRandomInt(0, 1);
-                this.context.free[2] = getRandomInt(0, 1);
+                // this.context.free[0] = getRandomInt(0, 1); -- we get the states of the sensor from the gui
+                // this.context.free[1] = getRandomInt(0, 1); -- we get the states of the sensor from the gui
+                // this.context.free[2] = getRandomInt(0, 1); -- we get the states of the sensor from the gui
             }
             else {
                 this.context.free[2] = this.context.free[1];
@@ -449,25 +449,25 @@ class TrafficGround {
     receiveMessage(nameChanel) {
         // messages received from initial state
         if (this.currentState === "initialState" && nameChanel === "green_light_2") {
+            this.reduceCars(2);
             this.currentState = "topLeftState";
         }
         else if (this.currentState === "initialState" && nameChanel === "green_light_1") {
+            this.reduceCars(1);
             this.currentState = "topRightState";
         }
         else if (this.currentState === "initialState" && nameChanel === "green_light_0") {
+            this.reduceCars(0);
             this.currentState = "bottomState";
         }
         // messages received from other states
         else if (this.currentState === "topLeftState" && nameChanel === "red_light_2") {
-            this.reduceCars(2);
             this.currentState = "initialState";
         }
         else if (this.currentState === "topRightState" && nameChanel === "red_light_1") {
-            this.reduceCars(1);
             this.currentState = "initialState";
         }
         else if (this.currentState === "bottomState" && nameChanel === "red_light_0") {
-            this.reduceCars(0);
             this.currentState = "initialState";
         }
     }

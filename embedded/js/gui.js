@@ -17,6 +17,13 @@ $(function () {
     let launchableNormalCarSide = $("<img class='car car-side animated fadeInLeft' src='img/normal-car-side.png'/>");
     let launchableSlowCarSide = $("<img class='car car-side animated fadeInLeft' src='img/slow-car-side.png'/>");
 
+    let tlSlow = $("#tl-slow");
+    let tlNormal = $("#tl-normal");
+    let tlFast = $("#tl-fast");
+    let tlSky = $("#tl-sky");
+
+    let sensors = [$("#sensor-0"), $("#sensor-1"), $("#sensor-2")];
+
     document.addEventListener("car-created", (event) => {
         if (event.detail === 2) {
             let clone = fastCar.clone();
@@ -93,6 +100,9 @@ $(function () {
                     car.addClass("animate-slow-car");
                     // -- after the animation, we fade out the car
                     roadSide.append(car);
+                    setTimeout(() => {
+                        car.remove();
+                    }, 5000);
                     break;
                 case 1:
                     car = launchableNormalCarSide.clone();
@@ -100,6 +110,9 @@ $(function () {
                     car.addClass("animate-normal-car");
                     // -- after the animation, we fade out the car
                     roadSide.append(car);
+                    setTimeout(() => {
+                        car.remove();
+                    }, 5000);
                     break;
                 case 2:
                     car = launchableFastCarSide.clone();
@@ -107,6 +120,9 @@ $(function () {
                     car.addClass("animate-fast-car");
                     // -- after the animation, we fade out the car
                     roadSide.append(car);
+                    setTimeout(() => {
+                        car.remove();
+                    }, 5000);
                     break;
             }
         }, 400);
@@ -114,34 +130,32 @@ $(function () {
 
     document.addEventListener("sky-tl", (event) => {
         if (event.detail === "green") {
-            $("#tl-sky").attr("src", "img/tl-sky-green.png");
+            tlSky.attr("src", "img/tl-sky-green.png");
         } else {
-            $("#tl-sky").attr("src", "img/tl-sky-red.png");
+            tlSky.attr("src", "img/tl-sky-red.png");
         }
     });
 
     document.addEventListener("green-light", (event) => {
         switch (event.detail) {
-            case "0": $("#tl-slow").attr("src", "img/tl-green.png"); break;
-            case "1": $("#tl-normal").attr("src", "img/tl-green.png"); break;
-            case "2": $("#tl-fast").attr("src", "img/tl-green.png"); break;
+            case "0": tlSlow.attr("src", "img/tl-green.png"); break;
+            case "1": tlNormal.attr("src", "img/tl-green.png"); break;
+            case "2": tlFast.attr("src", "img/tl-green.png"); break;
         }
     });
 
     document.addEventListener("red-light", (event) => {
         switch (event.detail) {
-            case "0": $("#tl-slow").attr("src", "img/tl-red.png"); break;
-            case "1": $("#tl-normal").attr("src", "img/tl-red.png"); break;
-            case "2": $("#tl-fast").attr("src", "img/tl-red.png"); break;
+            case "0": tlSlow.attr("src", "img/tl-red.png"); break;
+            case "1": tlNormal.attr("src", "img/tl-red.png"); break;
+            case "2": tlFast.attr("src", "img/tl-red.png"); break;
         }
     });
 
-
-
     setInterval(() => {
-        // we flip a coin
         if (system.context.redSky === false) {
-            let r = getRandomInt(0, 1);
+            // we flip a coin (prob 1/3 car present highway)
+            let r = getRandomInt(0, 2);
             let car;
             // we add cars if the sky traffic light is green
             if (r === 1) {
@@ -176,25 +190,70 @@ $(function () {
 
         // we move them by a certain amount of pixel
         for(let i = queueHighwayCars.length - 1; i >= 0; i--) {
-            queueHighwayCars[i].animate({left: "+=64"}, 300, "linear");
-
-            // if their x pixel is between 360 and 250, then we set free[0] to 0
-
-            // if their pixel is between 200 and 250, then we set free[1] to 0
-
-            // if their pixel is between 200 and 250, then we set free[2] to 0
-
 
             if (queueHighwayCars[i].offset().left > 650) {
                 let currentCar = queueHighwayCars[i];
                 currentCar.addClass("fadeOutRight");
+
                 setTimeout(() => {
                     queueHighwayCars.splice(queueHighwayCars.indexOf(currentCar), 1 );
                     currentCar.remove();
                 }, 300);
             }
 
+            queueHighwayCars[i].animate({left: "+=64"}, 200, "linear", () => {
+
+            });
         }
-    }, 1000);
+        // then, we update the sensors
+        setTimeout(() => {
+            let sensorMisARed = false;
+
+            for(let i = 0; i < queueHighwayCars.length; i++) {
+                // tu te comprends...
+                if (155 <= queueHighwayCars[i].offset().left && queueHighwayCars[i].offset().left <= 220) {
+                    system.context.free[0] = 0;
+                    sensorMisARed = true;
+                    sensors[0].attr("src", "img/sensor-red.png");
+                    break;
+                }
+            }
+            if (!sensorMisARed) {
+                system.context.free[0] = 1;
+                sensors[0].attr("src", "img/sensor-green.png");
+            }
+            sensorMisARed = false;
+
+            for(let i = 0; i < queueHighwayCars.length; i++) {
+                // if their pixel is between 200 and 250, then we set free[1] to 0
+                if (280 <= queueHighwayCars[i].offset().left && queueHighwayCars[i].offset().left <= 350) {
+                    system.context.free[1] = 0;
+                    sensorMisARed = true;
+                    sensors[1].attr("src", "img/sensor-red.png");
+                    break;
+                }
+            }
+            if (!sensorMisARed) {
+                system.context.free[1] = 1;
+                sensors[1].attr("src", "img/sensor-green.png");
+            }
+            sensorMisARed = false;
+
+            for(let i = 0; i < queueHighwayCars.length; i++) {
+                // if their pixel is between 200 and 250, then we set free[2] to 0
+                if (495 <= queueHighwayCars[i].offset().left && queueHighwayCars[i].offset().left <= 550)
+                {
+                    system.context.free[2] = 0;
+                    sensorMisARed = true;
+                    sensors[2].attr("src", "img/sensor-red.png");
+                    break;
+                }
+            }
+            if (!sensorMisARed) {
+                system.context.free[2] = 1;
+                sensors[2].attr("src", "img/sensor-green.png");
+            }
+        }, 300);
+    }, 1200);
 
 });
