@@ -37,7 +37,6 @@ class Channel {
     sendMessage(sender) {
         if (this.isBoadcast) {
             sender.messageSent(this.nameChannel);
-
             this.listeners.forEach(listener => listener.receiveMessage(this.nameChannel));
         }
         else {
@@ -56,7 +55,7 @@ class Clock {
     }
 }
 // Static variable period
-Clock.period = 10;
+Clock.period = 500;
 // each time a transition is taken (or something happen),
 // the clock increases by the value below
 Clock.interval = 1;
@@ -329,18 +328,23 @@ class SkyTrafficLight {
             this.context.redSky = true;
             this.timer.value = 0;
             this.currentState = "Red";
+            document.dispatchEvent(new CustomEvent("sky-tl", {detail: "red"}));
         }
         else if (this.currentState === "Red" && nameChannel === "red_light_0") {
             this.context.redSky = false;
             this.currentState = "Green";
+            document.dispatchEvent(new CustomEvent("sky-tl", {detail: "green"}));
+
         }
         else if (this.currentState === "Red" && nameChannel === "red_light_1") {
             this.context.redSky = false;
             this.currentState = "Green";
+            document.dispatchEvent(new CustomEvent("sky-tl", {detail: "green"}));
         }
         else if (this.currentState === "Red" && nameChannel === "red_light_2") {
             this.context.redSky = false;
             this.currentState = "Green";
+            document.dispatchEvent(new CustomEvent("sky-tl", {detail: "green"}));
         }
     }
 
@@ -386,6 +390,8 @@ class GroundTrafficLight {
             this.timer.value = 0;
             this.context.trafficLight[this.index] = true;
             this.currentState = "Green";
+
+            document.dispatchEvent(new CustomEvent("green-light", {detail: this.index}));
         }
     }
 
@@ -396,6 +402,8 @@ class GroundTrafficLight {
         {
             this.context.trafficLight[this.index] = false;
             this.currentState = "Red";
+
+            document.dispatchEvent(new CustomEvent("red-light", {detail: this.index}));
         }
     }
 
@@ -432,7 +440,7 @@ class TrafficGround {
             let action = getRandomInt(0, 2);
             let nbCars = getRandomInt(0, 1);
 
-            if (this.context.trafficGr[action] <= this.context.MAX_CARS) {
+            if (this.context.trafficGr[action] < this.context.MAX_CARS) {
                 this.addCars(action, nbCars);
             }
         }
@@ -467,6 +475,9 @@ class TrafficGround {
     reduceCars(num) {
         if (this.context.trafficGr[num] > 0)
             this.context.trafficGr[num]--;
+
+        // trigger custom event
+        document.dispatchEvent(new CustomEvent("car-launched", {detail: num}));
     }
 
     addCars(num, nbcars) {
@@ -474,6 +485,11 @@ class TrafficGround {
             this.context.trafficGr[num] += parseInt(nbcars);
         else
             this.context.trafficGr[num] = this.context.MAX_CARS;
+
+        // trigger custom event
+        if (nbcars === 1)
+            document.dispatchEvent(new CustomEvent("car-created", {detail: num}));
+
     }
 
     mustQuitCurrentStateNow() {
@@ -503,7 +519,7 @@ class System {
         this.context = {
             x: new Clock("x"),
             timer: new Clock("timer"),
-            MAX_CARS: 10,
+            MAX_CARS: 5,
             WAIT_TIME: 80,
             turn: 0,
             launched: false,
@@ -611,39 +627,39 @@ class System {
         let elementHTML = document.getElementById("state");
         elementHTML.innerHTML = "<ul>";
             elementHTML.innerHTML += "<strong>Clocks</strong>";
-            elementHTML.innerHTML += "<li>(clock) x: " + this.context.x.value + "</li>";
-            elementHTML.innerHTML += "<li>(clock) controller.timer: " + this.context.controller.timer.value + "</li>";
-            elementHTML.innerHTML += "<li>(clock) skyLight.timer: "   + this.context.skyTrafficLight.timer.value   + "</li>";
-            elementHTML.innerHTML += "<li>(clock) groundTrafficLights[0].timer: " + this.context.groundTrafficLights[0].timer.value + "</li>";
-            elementHTML.innerHTML += "<li>(clock) groundTrafficLights[1].timer: " + this.context.groundTrafficLights[1].timer.value + "</li>";
-            elementHTML.innerHTML += "<li>(clock) groundTrafficLights[2].timer: " + this.context.groundTrafficLights[2].timer.value + "</li>";
+            elementHTML.innerHTML += "<li>x: " + this.context.x.value + "</li>";
+            elementHTML.innerHTML += "<li>controller.timer: " + this.context.controller.timer.value + "</li>";
+            elementHTML.innerHTML += "<li>skyLight.timer: "   + this.context.skyTrafficLight.timer.value   + "</li>";
+            elementHTML.innerHTML += "<li>groundTrafficLights[0].timer: " + this.context.groundTrafficLights[0].timer.value + "</li>";
+            elementHTML.innerHTML += "<li>groundTrafficLights[1].timer: " + this.context.groundTrafficLights[1].timer.value + "</li>";
+            elementHTML.innerHTML += "<li>groundTrafficLights[2].timer: " + this.context.groundTrafficLights[2].timer.value + "</li>";
 
             elementHTML.innerHTML += "<strong>Integers</strong>";
-            elementHTML.innerHTML += "<li>(int) free[0]: " + this.context.free[0] + "</li>";
-            elementHTML.innerHTML += "<li>(int) free[1]: " + this.context.free[1] + "</li>";
-            elementHTML.innerHTML += "<li>(int) free[2]: " + this.context.free[2] + "</li>";
-            elementHTML.innerHTML += "<li>(int) trafficGr[0]: " + this.context.trafficGr[0] + "</li>";
-            elementHTML.innerHTML += "<li>(int) trafficGr[1]: " + this.context.trafficGr[1] + "</li>";
-            elementHTML.innerHTML += "<li>(int) trafficGr[2]: " + this.context.trafficGr[2] + "</li>";
-            elementHTML.innerHTML += "<li>(int) MAX_CARS: "  + this.context.MAX_CARS + "</li>";
-            elementHTML.innerHTML += "<li>(int) WAIT_TIME: " + this.context.WAIT_TIME + "</li>";
-            elementHTML.innerHTML += "<li>(int) turn: " + this.context.turn + "</li>";
+            elementHTML.innerHTML += "<li>free[0]: " + this.context.free[0] + "</li>";
+            elementHTML.innerHTML += "<li>free[1]: " + this.context.free[1] + "</li>";
+            elementHTML.innerHTML += "<li>free[2]: " + this.context.free[2] + "</li>";
+            elementHTML.innerHTML += "<li>trafficGr[0]: " + this.context.trafficGr[0] + "</li>";
+            elementHTML.innerHTML += "<li>trafficGr[1]: " + this.context.trafficGr[1] + "</li>";
+            elementHTML.innerHTML += "<li>trafficGr[2]: " + this.context.trafficGr[2] + "</li>";
+            elementHTML.innerHTML += "<li>MAX_CARS: "  + this.context.MAX_CARS + "</li>";
+            elementHTML.innerHTML += "<li>WAIT_TIME: " + this.context.WAIT_TIME + "</li>";
+            elementHTML.innerHTML += "<li>turn: " + this.context.turn + "</li>";
 
             elementHTML.innerHTML += "<strong>Bools</strong>";
-            elementHTML.innerHTML += "<li>(bool) launched: " + this.context.launched + "</li>";
-            elementHTML.innerHTML += "<li>(bool) redSky: "   + this.context.redSky + "</li>";
-            elementHTML.innerHTML += "<li>(bool) trafficLightGround[0]: " + this.context.trafficLight[0] + "</li>";
-            elementHTML.innerHTML += "<li>(bool) trafficLightGround[1]: " + this.context.trafficLight[1] + "</li>";
-            elementHTML.innerHTML += "<li>(bool) trafficLightGround[2]: " + this.context.trafficLight[2] + "</li>";
+            elementHTML.innerHTML += "<li>launched: " + this.context.launched + "</li>";
+            elementHTML.innerHTML += "<li>redSky: "   + this.context.redSky + "</li>";
+            elementHTML.innerHTML += "<li>trafficLightGround[0]: " + this.context.trafficLight[0] + "</li>";
+            elementHTML.innerHTML += "<li>trafficLightGround[1]: " + this.context.trafficLight[1] + "</li>";
+            elementHTML.innerHTML += "<li>trafficLightGround[2]: " + this.context.trafficLight[2] + "</li>";
 
             elementHTML.innerHTML += "<strong>Automates</strong>";
-            elementHTML.innerHTML += "<li>(string) controller: " + this.context.controller.currentState + "</li>";
-            elementHTML.innerHTML += "<li>(string) sensors: "    + this.context.sensors.currentState + "</li>";
-            elementHTML.innerHTML += "<li>(string) trafficGround: "   + this.context.trafficGround.currentState + "</li>";
-            elementHTML.innerHTML += "<li>(string) skyTrafficLight: " + this.context.skyTrafficLight.currentState + "</li>";
-            elementHTML.innerHTML += "<li>(string) groundTrafficLight[0]: " + this.context.groundTrafficLights[0].currentState + "</li>";
-            elementHTML.innerHTML += "<li>(string) groundTrafficLight[1]: " + this.context.groundTrafficLights[1].currentState + "</li>";
-            elementHTML.innerHTML += "<li>(string) groundTrafficLight[2]: " + this.context.groundTrafficLights[2].currentState + "</li>";
+            elementHTML.innerHTML += "<li>controller: " + this.context.controller.currentState + "</li>";
+            elementHTML.innerHTML += "<li>sensors: "    + this.context.sensors.currentState + "</li>";
+            elementHTML.innerHTML += "<li>trafficGround: "   + this.context.trafficGround.currentState + "</li>";
+            elementHTML.innerHTML += "<li>skyTrafficLight: " + this.context.skyTrafficLight.currentState + "</li>";
+            elementHTML.innerHTML += "<li>groundTrafficLight[0]: " + this.context.groundTrafficLights[0].currentState + "</li>";
+            elementHTML.innerHTML += "<li>groundTrafficLight[1]: " + this.context.groundTrafficLights[1].currentState + "</li>";
+            elementHTML.innerHTML += "<li>groundTrafficLight[2]: " + this.context.groundTrafficLights[2].currentState + "</li>";
         elementHTML.innerHTML += "</ul>";
 
     }
