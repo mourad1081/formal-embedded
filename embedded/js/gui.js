@@ -159,10 +159,10 @@ $(function () {
     setInterval(() => {
         if (system.context.redSky === false) {
             // we flip a coin (prob 1/3 car present highway)
-            let r = getRandomInt(0, 1);
+            let r = getRandomInt(0, 100);
             let car;
             // we add cars if the sky traffic light is green
-            if (r === 1) {
+            if (r <= 50) {
                 let r2 = getRandomInt(0, 2);
                 let roadSide = $("#road-side");
                 switch (r2) {
