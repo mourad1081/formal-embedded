@@ -1,7 +1,7 @@
 $(function () {
-    let fastCar = $("<img class='car fast-car car-top animated bounceIn' src='img/fast-car-top.png'/>");
-    let normalCar = $("<img class='car normal-car car-top animated bounceIn' src='img/normal-car-top.png'/>");
-    let slowCar = $("<img class='car slow-car car-top animated bounceIn' src='img/slow-car-top.png'/>");
+    let fastCar = $("<img class='car fast-car car-top animated fadeInUp' src='img/fast-car-top.png'/>");
+    let normalCar = $("<img class='car normal-car car-top animated fadeInUp' src='img/normal-car-top.png'/>");
+    let slowCar = $("<img class='car slow-car car-top animated fadeInUp' src='img/slow-car-top.png'/>");
 
     let queueFastCar = [];
     let queueNormalCar = [];
@@ -103,8 +103,8 @@ $(function () {
 
                     setTimeout(() => {
                         car.css("top", 115).css("left", 768);
-                        car.removeClass("animate-slow-car").addClass("animated fadeOut");
-                    }, 4500);
+                        car.removeClass("animate-slow-car").addClass("animated fadeOutRight");
+                    }, 4000);
                     break;
                 case 1:
                     car = launchableNormalCarSide.clone();
@@ -114,8 +114,8 @@ $(function () {
                     roadSide.append(car);
                     setTimeout(() => {
                         car.css("top", 150).css("left", 768);
-                        car.removeClass("animate-normal-car").addClass("animated fadeOut");
-                    }, 3500);
+                        car.removeClass("animate-normal-car").addClass("animated fadeOutRight");
+                    }, 3000);
                     break;
                 case 2:
                     car = launchableFastCarSide.clone();
@@ -125,8 +125,8 @@ $(function () {
                     roadSide.append(car);
                     setTimeout(() => {
                         car.css("top", 150).css("left", 768);
-                        car.removeClass("animate-fast-car").addClass("animated fadeOut");
-                    }, 2000);
+                        car.removeClass("animate-fast-car").addClass("animated fadeOutRight");
+                    }, 1500);
                     break;
             }
         }, 300);
@@ -185,13 +185,6 @@ $(function () {
             }
         }
 
-        // for debug purpose
-        document.onmousemove = function(e){
-            var x = e.pageX - $('#road-side').offset().left;
-            var y = e.pageY - $('#road-side').offset().top;
-            e.target.title = "X is "+x+" and Y is "+y;
-        };
-
         // we move them by a certain amount of pixel
         for(let i = queueHighwayCars.length - 1; i >= 0; i--) {
 
@@ -205,7 +198,7 @@ $(function () {
                 }, 300);
             }
 
-            queueHighwayCars[i].animate({left: "+=64"}, 500, "linear");
+            queueHighwayCars[i].animate({left: "+=64"}, 400, "linear");
         }
         // then, we update the sensors
         setTimeout(() => {
