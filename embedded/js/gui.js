@@ -13,9 +13,9 @@ $(function () {
     let normalCarSide = $("<img class='car normal-car car-side animated fadeInLeft' src='img/normal-car-side.png'/>");
     let slowCarSide = $("<img class='car slow-car car-side animated fadeInLeft' src='img/slow-car-side.png'/>");
 
-    let launchableFastCarSide = $("<img class='car car-side animated fadeInLeft' src='img/fast-car-side.png'/>");
-    let launchableNormalCarSide = $("<img class='car car-side animated fadeInLeft' src='img/normal-car-side.png'/>");
-    let launchableSlowCarSide = $("<img class='car car-side animated fadeInLeft' src='img/slow-car-side.png'/>");
+    let launchableFastCarSide = $("<img class='car   car-side' src='img/fast-car-side.png'/>");
+    let launchableNormalCarSide = $("<img class='car car-side' src='img/normal-car-side.png'/>");
+    let launchableSlowCarSide = $("<img class='car   car-side' src='img/slow-car-side.png'/>");
 
     let tlSlow = $("#tl-slow");
     let tlNormal = $("#tl-normal");
@@ -100,9 +100,11 @@ $(function () {
                     car.addClass("animate-slow-car");
                     // -- after the animation, we fade out the car
                     roadSide.append(car);
+
                     setTimeout(() => {
-                        car.remove();
-                    }, 5000);
+                        car.css("top", 115).css("left", 768);
+                        car.removeClass("animate-slow-car").addClass("animated fadeOut");
+                    }, 4500);
                     break;
                 case 1:
                     car = launchableNormalCarSide.clone();
@@ -111,8 +113,9 @@ $(function () {
                     // -- after the animation, we fade out the car
                     roadSide.append(car);
                     setTimeout(() => {
-                        car.remove();
-                    }, 5000);
+                        car.css("top", 150).css("left", 768);
+                        car.removeClass("animate-normal-car").addClass("animated fadeOut");
+                    }, 3500);
                     break;
                 case 2:
                     car = launchableFastCarSide.clone();
@@ -121,11 +124,12 @@ $(function () {
                     // -- after the animation, we fade out the car
                     roadSide.append(car);
                     setTimeout(() => {
-                        car.remove();
-                    }, 5000);
+                        car.css("top", 150).css("left", 768);
+                        car.removeClass("animate-fast-car").addClass("animated fadeOut");
+                    }, 2000);
                     break;
             }
-        }, 400);
+        }, 300);
     });
 
     document.addEventListener("sky-tl", (event) => {
@@ -155,7 +159,7 @@ $(function () {
     setInterval(() => {
         if (system.context.redSky === false) {
             // we flip a coin (prob 1/3 car present highway)
-            let r = getRandomInt(0, 2);
+            let r = getRandomInt(0, 1);
             let car;
             // we add cars if the sky traffic light is green
             if (r === 1) {
@@ -201,9 +205,7 @@ $(function () {
                 }, 300);
             }
 
-            queueHighwayCars[i].animate({left: "+=64"}, 200, "linear", () => {
-
-            });
+            queueHighwayCars[i].animate({left: "+=64"}, 500, "linear");
         }
         // then, we update the sensors
         setTimeout(() => {
@@ -254,6 +256,6 @@ $(function () {
                 sensors[2].attr("src", "img/sensor-green.png");
             }
         }, 300);
-    }, 1200);
+    }, 500);
 
 });

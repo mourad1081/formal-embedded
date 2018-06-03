@@ -72,9 +72,14 @@ footer {
     left: 200px;
 }
 
-.fast-car.car-side, .normal-car.car-side, .slow-car.car-side {
-    top: 100px;
-    left: 0px;
+.fast-car.car-side, .normal-car.car-side {
+    top: 150px;
+    left: 0;
+}
+
+.slow-car.car-side {
+    top: 115px;
+    left: 0;
 }
 
 .normal-car.car-top {
@@ -106,13 +111,13 @@ img.tl {
 }
 
 .animate-slow-car {
-    animation: animation-slow-car-to-highway 2s linear;
+    animation: animation-slow-car-to-highway 4s linear;
 }
 .animate-normal-car {
-    animation: animation-normal-car-to-highway  1s linear;
+    animation: animation-normal-car-to-highway 3s linear;
 }
 .animate-fast-car {
-    animation: animation-fast-car-to-highway .5s linear;
+    animation: animation-fast-car-to-highway 1.5s linear;
 }
 
 #tl-sky {
@@ -171,8 +176,8 @@ img.tl {
 
     100% {
         transform: rotate(0deg);
-        left: 750px;
-        top: 100px;
+        left: 768px;
+        top: 115px;
     }
 }
 
@@ -186,13 +191,13 @@ img.tl {
     80% {
         transform: rotate(-30deg);
         left: 700px;
-        top: 150px;
+        top: 180px;
     }
 
     100% {
         transform: rotate(0deg);
-        left: 750px;
-        top: 100px;
+        left: 768px;
+        top: 150px;
     }
 }
 
@@ -204,14 +209,14 @@ img.tl {
     }
 
     80% {
-        transform: rotate(-60deg);
+        transform: rotate(-30deg);
         left: 700px;
-        top: 150px;
+        top: 180px;
     }
 
     100% {
         transform: rotate(0deg);
-        left: 750px;
-        top: 100px;
+        left: 768px;
+        top: 150px;
     }
 }
