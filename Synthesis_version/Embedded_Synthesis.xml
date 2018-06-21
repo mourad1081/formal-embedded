@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?><!DOCTYPE nta PUBLIC '-//Uppaal Team//DTD Flat System 1.1//EN' 'http://www.it.uu.se/research/group/darts/uppaal/flat-1_1.dtd'><nta><declaration>// Place global declarations here.
+
+const int MAX_CARS = 2;
+
+bool free[1] := {1};
+int[0, MAX_CARS] traffic_gr[1];
+bool traffic_light[1];
+
+broadcast chan green_light[1];
+broadcast chan red_light[1];
+
+chan consult;
+
+bool noGroundTraffic(){
+	return traffic_gr[0] == 0;
+}
+
+void reduce_cars(int num){
+	if(traffic_gr[num] &gt; 0){
+		traffic_gr[num]--;
+	}
+}</declaration><template><name x="5" y="5">TL_Gr1</name><declaration>// Place local declarations here.
+clock timer;</declaration><location id="id0" x="96" y="-32"><name x="86" y="-62">Green</name><label kind="invariant" x="112" y="-40">timer &lt;= 15</label></location><location id="id1" x="-128" y="-32"><name x="-168" y="-40">Red</name></location><init ref="id1"/><transition action=""><source ref="id0"/><target ref="id1"/><label kind="synchronisation" x="-48" y="0">red_light[0]!</label><label kind="assignment" x="-56" y="16">traffic_light[0] = 0</label><nail x="-16" y="0"/></transition><transition action=""><source ref="id1"/><target ref="id0"/><label kind="synchronisation" x="-56" y="-88">green_light[0]?</label><label kind="assignment" x="-56" y="-120">timer = 0,
+traffic_light[0] = 1</label><nail x="-16" y="-64"/></transition></template><template><name>Controller</name><declaration>clock timer;</declaration><location id="id2" x="-2464" y="-2816"><name x="-2448" y="-2824">Consult</name></location><location id="id3" x="-2880" y="-2912"><name x="-2864" y="-2904">Red</name></location><location id="id4" x="-2656" y="-2688"><name x="-2680" y="-2672">Green</name></location><init ref="id3"/><transition action=""><source ref="id3"/><target ref="id3"/><label kind="guard" x="-2960" y="-3000">noGroundTraffic()</label><nail x="-2944" y="-2912"/><nail x="-2944" y="-2976"/><nail x="-2880" y="-2976"/></transition><transition action=""><source ref="id2"/><target ref="id3"/><nail x="-2464" y="-2912"/></transition><transition action=""><source ref="id3"/><target ref="id2"/><label kind="guard" x="-2736" y="-2800">not noGroundTraffic()</label><label kind="synchronisation" x="-2696" y="-2816">consult!</label><nail x="-2848" y="-2816"/></transition><transition action=""><source ref="id4"/><target ref="id3"/><label kind="synchronisation" x="-2824" y="-2680">red_light[0]?</label><nail x="-2880" y="-2688"/></transition><transition action=""><source ref="id2"/><target ref="id4"/><label kind="guard" x="-2600" y="-2672">traffic_gr[0] &gt; 0 and free[0]==1</label><label kind="synchronisation" x="-2552" y="-2688">green_light[0]!</label><label kind="assignment" x="-2552" y="-2656">reduce_cars(0)</label><nail x="-2464" y="-2688"/></transition></template><template><name>Traffic_Ground</name><declaration>void add_cars(int num, int number_to_add){
+	if(traffic_gr[num]+number_to_add &lt; MAX_CARS){
+		traffic_gr[num] = traffic_gr[num]+number_to_add;
+	} else {
+		traffic_gr[num] = MAX_CARS;
+	}
+}</declaration><location id="id5" x="-80" y="-80"><name x="-120" y="-88">Init</name></location><init ref="id5"/><transition controllable="false" action=""><source ref="id5"/><target ref="id5"/><label kind="select" x="-112" y="-264">r : int[1,2]</label><label kind="guard" x="-152" y="-280">traffic_gr[0] &lt; MAX_CARS</label><label kind="assignment" x="-120" y="-248">add_cars(0, r)</label><nail x="-144" y="-224"/><nail x="-8" y="-224"/></transition></template><template><name>Sensors</name><location id="id6" x="-32" y="-96"><name x="-42" y="-126">on</name></location><init ref="id6"/><transition controllable="false" action=""><source ref="id6"/><target ref="id6"/><label kind="select" x="-64" y="-248">r0 : int[0,1]</label><label kind="synchronisation" x="-152" y="-248">consult?</label><label kind="assignment" x="32" y="-248">free[0] = r0</label><nail x="-192" y="-224"/><nail x="128" y="-224"/></transition></template><template><name>Game</name><location id="id7" x="-320" y="-128"><name x="-344" y="-120">Crash</name></location><location id="id8" x="-640" y="-128"><name x="-648" y="-112">Safe</name></location><init ref="id8"/><transition action=""><source ref="id8"/><target ref="id8"/><label kind="guard" x="-816" y="-128">free[0]==1</label><label kind="synchronisation" x="-832" y="-144">green_light[0]?</label><nail x="-736" y="-32"/><nail x="-736" y="-224"/></transition><transition action=""><source ref="id8"/><target ref="id7"/><label kind="guard" x="-512" y="-152">free[0]==0</label><label kind="synchronisation" x="-520" y="-168">green_light[0]?</label></transition></template><system>// Place template instantiations here.
+slow = TL_Gr1();
+sensors = Sensors();
+ctrl = Controller();
+tg = Traffic_Ground();
+game = Game();
+// List one or more processes to be composed into a system.
+system slow, sensors, ctrl, tg, game;
+</system></nta>

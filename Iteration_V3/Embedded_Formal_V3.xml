@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="utf-8"?><!DOCTYPE nta PUBLIC '-//Uppaal Team//DTD Flat System 1.1//EN' 'http://www.it.uu.se/research/group/darts/uppaal/flat-1_1.dtd'><nta><declaration>// Place global declarations here.
+clock x;
+
+const int MAX_CARS = 10;
+const int WAIT_TIME = 80;
+
+int turn = 0;
+bool launched = false;
+
+bool free[3] := {1,1,1};
+int[0, MAX_CARS] traffic_gr[3];
+bool traffic_light[3];
+
+broadcast chan green_light[3];
+broadcast chan red_light[3];
+
+chan consult;
+
+broadcast chan red_sky_tl;
+bool red_sky := false;
+
+bool noGroundTraffic(){
+	return traffic_gr[0] + traffic_gr[1] + traffic_gr[2] == 0;
+}
+
+bool launchPossible(){
+	bool launchPossible = free[turn] == 1 and traffic_gr[turn] != 0;
+	return launchPossible;
+}
+
+void updateTurn(){
+	if(traffic_gr[0] + traffic_gr[1] + traffic_gr[2] &gt; 0){
+		if(launched or traffic_gr[turn] == 0){
+			launched = false;
+			turn = (turn + 1) % 3;
+			while(traffic_gr[turn] == 0){
+				turn = (turn + 1) % 3;		
+			}
+		}
+	}
+}</declaration><template><name x="5" y="5">TL_Gr1</name><declaration>// Place local declarations here.
+clock timer;</declaration><location id="id0" x="96" y="-32"><name x="86" y="-62">Green</name><label kind="invariant" x="112" y="-40">timer &lt;= 15</label></location><location id="id1" x="-128" y="-32"><name x="-168" y="-40">Red</name></location><init ref="id1"/><transition action=""><source ref="id0"/><target ref="id1"/><label kind="synchronisation" x="-48" y="0">red_light[0]!</label><label kind="assignment" x="-56" y="16">traffic_light[0] = 0</label><nail x="-16" y="0"/></transition><transition action=""><source ref="id1"/><target ref="id0"/><label kind="synchronisation" x="-56" y="-88">green_light[0]?</label><label kind="assignment" x="-56" y="-120">timer = 0,
+traffic_light[0] = 1</label><nail x="-16" y="-64"/></transition></template><template><name>TL_Gr2</name><declaration>clock timer;</declaration><location id="id2" x="208" y="-48"><name x="198" y="-78">Green</name><label kind="invariant" x="232" y="-56">timer &lt;= 15</label></location><location id="id3" x="-208" y="-48"><name x="-218" y="-78">Red</name></location><init ref="id3"/><transition action=""><source ref="id2"/><target ref="id3"/><label kind="synchronisation" x="-32" y="24">red_light[1]!</label><label kind="assignment" x="-48" y="40">traffic_light[1] = 0</label><nail x="0" y="24"/></transition><transition action=""><source ref="id3"/><target ref="id2"/><label kind="synchronisation" x="-40" y="-128">green_light[1]?</label><label kind="assignment" x="-40" y="-160">timer = 0,
+traffic_light[1] = 1</label><nail x="0" y="-112"/></transition></template><template><name>TL_Gr3</name><declaration>clock timer;</declaration><location id="id4" x="176" y="16"><name x="166" y="-14">Green</name><label kind="invariant" x="192" y="8">timer &lt;= 15</label></location><location id="id5" x="-240" y="16"><name x="-250" y="-14">Red</name></location><init ref="id5"/><transition action=""><source ref="id4"/><target ref="id5"/><label kind="synchronisation" x="-64" y="64">red_light[2]!</label><label kind="assignment" x="-88" y="80">traffic_light[2] = 0</label><nail x="-32" y="64"/></transition><transition action=""><source ref="id5"/><target ref="id4"/><label kind="synchronisation" x="-80" y="-80">green_light[2]?</label><label kind="assignment" x="-72" y="-64">timer = 0,
+traffic_light[2] = 1</label><nail x="-32" y="-32"/></transition></template><template><name>Controller</name><declaration>clock timer;</declaration><location id="id6" x="-2464" y="-2816"><committed/></location><location id="id7" x="-2112" y="-2816"><label kind="invariant" x="-2096" y="-2824">timer &lt;= 5</label></location><location id="id8" x="-2816" y="-2816"><name x="-2800" y="-2816">RRR</name><label kind="invariant" x="-3040" y="-2840">x &lt;= WAIT_TIME and timer &lt;= 5</label></location><location id="id9" x="-2464" y="-2432"><name x="-2480" y="-2416">RRG</name></location><location id="id10" x="-2464" y="-2560"><name x="-2480" y="-2544">RGR</name></location><location id="id11" x="-2464" y="-2688"><name x="-2480" y="-2672">GRR</name></location><init ref="id8"/><transition action=""><source ref="id8"/><target ref="id8"/><label kind="guard" x="-3008" y="-2752">noGroundTraffic()</label><label kind="assignment" x="-2968" y="-2736">x = 0</label><nail x="-2880" y="-2720"/><nail x="-2928" y="-2784"/></transition><transition action=""><source ref="id6"/><target ref="id7"/><label kind="assignment" x="-2400" y="-2816">timer = 0, updateTurn()</label></transition><transition action=""><source ref="id7"/><target ref="id8"/><label kind="guard" x="-2576" y="-2944">not launchPossible() and timer &gt;= 5</label><label kind="assignment" x="-2488" y="-2928">timer = 0</label><nail x="-2464" y="-2912"/></transition><transition action=""><source ref="id8"/><target ref="id6"/><label kind="guard" x="-2776" y="-2800">(x &lt;= 30 or red_sky == true) and timer &gt;= 5 and not noGroundTraffic()</label><label kind="synchronisation" x="-2656" y="-2816">consult!</label></transition><transition action=""><source ref="id8"/><target ref="id8"/><label kind="guard" x="-2896" y="-2960">x &gt;= 30 and (red_sky == false) 
+and timer &gt;= 5 
+and not noGroundTraffic()</label><label kind="synchronisation" x="-2840" y="-2976">red_sky_tl!</label><nail x="-2848" y="-2912"/><nail x="-2784" y="-2912"/></transition><transition action=""><source ref="id9"/><target ref="id8"/><label kind="synchronisation" x="-2616" y="-2432">red_light[2]?</label><label kind="assignment" x="-2688" y="-2416">x = 0, timer = 0, launched = true</label><nail x="-2816" y="-2432"/></transition><transition action=""><source ref="id10"/><target ref="id8"/><label kind="synchronisation" x="-2616" y="-2560">red_light[1]?</label><label kind="assignment" x="-2688" y="-2544">x = 0, timer = 0, launched = true</label><nail x="-2784" y="-2560"/></transition><transition action=""><source ref="id11"/><target ref="id8"/><label kind="synchronisation" x="-2616" y="-2688">red_light[0]?</label><label kind="assignment" x="-2688" y="-2672">x = 0, timer = 0, launched = true</label><nail x="-2752" y="-2688"/></transition><transition action=""><source ref="id7"/><target ref="id9"/><label kind="guard" x="-2416" y="-2416">traffic_gr[2]&gt; 0 and free[2] and turn == 2</label><label kind="synchronisation" x="-2384" y="-2432">green_light[2]!</label><nail x="-2112" y="-2432"/></transition><transition action=""><source ref="id7"/><target ref="id10"/><label kind="guard" x="-2416" y="-2544">traffic_gr[1] &gt; 0 and free[1]and turn == 1</label><label kind="synchronisation" x="-2384" y="-2560">green_light[1]!</label><nail x="-2144" y="-2560"/></transition><transition action=""><source ref="id7"/><target ref="id11"/><label kind="guard" x="-2424" y="-2672">traffic_gr[0] &gt; 0 and free[0] and turn == 0</label><label kind="synchronisation" x="-2384" y="-2688">green_light[0]!</label><nail x="-2176" y="-2688"/></transition></template><template><name>Traffic_Ground</name><declaration>void reduce_cars(int num){
+	if(traffic_gr[num] &gt; 0){
+		traffic_gr[num]--;
+	}
+}
+
+void add_cars(int num, int number_to_add){
+	if(traffic_gr[num]+number_to_add &lt; MAX_CARS){
+		traffic_gr[num] = traffic_gr[num]+number_to_add;
+	} else {
+		traffic_gr[num] = MAX_CARS;
+	}
+}</declaration><location id="id12" x="-368" y="-240"></location><location id="id13" x="208" y="-184"></location><location id="id14" x="-80" y="192"></location><location id="id15" x="-80" y="-80"></location><init ref="id15"/><transition action=""><source ref="id12"/><target ref="id15"/><label kind="synchronisation" x="-352" y="-136">red_light[2]?</label><label kind="assignment" x="-360" y="-120">reduce_cars(2)</label><nail x="-256" y="-120"/></transition><transition action=""><source ref="id13"/><target ref="id15"/><label kind="synchronisation" x="56" y="-216">red_light[1]?</label><label kind="assignment" x="48" y="-200">reduce_cars(1)</label><nail x="104" y="-184"/></transition><transition action=""><source ref="id15"/><target ref="id13"/><label kind="synchronisation" x="72" y="-136">green_light[1]?</label></transition><transition action=""><source ref="id15"/><target ref="id12"/><label kind="synchronisation" x="-264" y="-208">green_light[2]?</label></transition><transition action=""><source ref="id14"/><target ref="id15"/><label kind="synchronisation" x="-216" y="88">red_light[0]?</label><label kind="assignment" x="-224" y="72">reduce_cars(0)</label><nail x="-128" y="72"/></transition><transition action=""><source ref="id15"/><target ref="id14"/><label kind="synchronisation" x="-72" y="80">green_light[0]?</label></transition><transition controllable="false" action=""><source ref="id15"/><target ref="id15"/><label kind="select" x="80" y="-16">r : int[1,2]</label><label kind="guard" x="64" y="16">traffic_gr[1] &lt; MAX_CARS</label><label kind="assignment" x="72" y="0">add_cars(1, r)</label><nail x="32" y="40"/><nail x="96" y="-56"/></transition><transition controllable="false" action=""><source ref="id15"/><target ref="id15"/><label kind="select" x="-112" y="-264">r : int[1,2]</label><label kind="guard" x="-152" y="-280">traffic_gr[0] &lt; MAX_CARS</label><label kind="assignment" x="-120" y="-248">add_cars(0, r)</label><nail x="-144" y="-224"/><nail x="-8" y="-224"/></transition><transition controllable="false" action=""><source ref="id15"/><target ref="id15"/><label kind="select" x="-296" y="-16">r : int[1,2]</label><label kind="guard" x="-392" y="-32">traffic_gr[2] &lt; MAX_CARS</label><label kind="assignment" x="-320" y="0">add_cars(2, r)</label><nail x="-184" y="32"/><nail x="-240" y="-56"/></transition></template><template><name>TL_Sky</name><declaration>clock timer;</declaration><location id="id16" x="72" y="-80"><name x="62" y="-110">Red</name><label kind="invariant" x="62" y="-65">timer &lt;=30</label></location><location id="id17" x="-272" y="-80"><name x="-288" y="-120">Green</name></location><init ref="id17"/><transition action=""><source ref="id16"/><target ref="id17"/><label kind="synchronisation" x="-160" y="217">red_light[2]?</label><label kind="assignment" x="-160" y="232">red_sky = 0</label><nail x="-112" y="216"/></transition><transition action=""><source ref="id16"/><target ref="id17"/><label kind="synchronisation" x="-136" y="105">red_light[1]?</label><label kind="assignment" x="-136" y="120">red_sky = 0</label><nail x="-120" y="104"/><nail x="-120" y="104"/></transition><transition action=""><source ref="id16"/><target ref="id17"/><label kind="synchronisation" x="-144" y="0">red_light[0]?</label><label kind="assignment" x="-144" y="-24">red_sky = 0</label><nail x="-112" y="-24"/></transition><transition action=""><source ref="id17"/><target ref="id16"/><label kind="synchronisation" x="-136" y="-160">red_sky_tl?</label><label kind="assignment" x="-136" y="-192">timer = 0,
+red_sky = 1</label><nail x="-104" y="-136"/></transition></template><template><name>Obs</name><location id="id18" x="-112" y="360"><name x="-128" y="368">Good</name></location><location id="id19" x="208" y="176"></location><location id="id20" x="80" y="176"></location><location id="id21" x="-48" y="176"></location><location id="id22" x="-176" y="176"></location><location id="id23" x="-304" y="176"></location><location id="id24" x="-432" y="176"></location><location id="id25" x="32" y="-24"></location><location id="id26" x="-112" y="-24"></location><location id="id27" x="-256" y="-24"></location><location id="id28" x="-112" y="-144"></location><init ref="id28"/><transition action=""><source ref="id19"/><target ref="id18"/><label kind="synchronisation" x="48" y="240">green_light[0]?</label></transition><transition action=""><source ref="id20"/><target ref="id18"/><label kind="synchronisation" x="8" y="216">green_light[1]?</label></transition><transition action=""><source ref="id21"/><target ref="id18"/><label kind="synchronisation" x="-104" y="240">green_light[1]?</label></transition><transition action=""><source ref="id22"/><target ref="id18"/><label kind="synchronisation" x="-208" y="240">green_light[0]?</label></transition><transition action=""><source ref="id23"/><target ref="id18"/><label kind="synchronisation" x="-296" y="216">green_light[1]?</label></transition><transition action=""><source ref="id24"/><target ref="id18"/><label kind="synchronisation" x="-376" y="240">green_light[2]?</label></transition><transition action=""><source ref="id27"/><target ref="id24"/><label kind="synchronisation" x="-432" y="96">green_light[1]?</label></transition><transition action=""><source ref="id27"/><target ref="id23"/><label kind="synchronisation" x="-328" y="96">green_light[2]?</label></transition><transition action=""><source ref="id26"/><target ref="id22"/><label kind="synchronisation" x="-208" y="72">green_light[2]?</label></transition><transition action=""><source ref="id26"/><target ref="id21"/><label kind="synchronisation" x="-104" y="72">green_light[0]?</label></transition><transition action=""><source ref="id25"/><target ref="id19"/><label kind="synchronisation" x="120" y="96">green_light[1]?</label></transition><transition action=""><source ref="id25"/><target ref="id20"/><label kind="synchronisation" x="16" y="96">green_light[0]?</label></transition><transition action=""><source ref="id28"/><target ref="id25"/><label kind="synchronisation" x="-48" y="-112">green_light[2]?</label></transition><transition action=""><source ref="id28"/><target ref="id26"/><label kind="synchronisation" x="-152" y="-80">green_light[1]?</label></transition><transition action=""><source ref="id28"/><target ref="id27"/><label kind="synchronisation" x="-256" y="-112">green_light[0]?</label></transition></template><template><name>Sensors</name><location id="id29" x="-32" y="-96"></location><init ref="id29"/><transition controllable="false" action=""><source ref="id29"/><target ref="id29"/><label kind="guard" x="0" y="48">red_sky == true</label><label kind="synchronisation" x="24" y="32">consult?</label><label kind="assignment" x="-160" y="32">free[2] = free[1],
+free[1] = free[0],
+free[0] = 1</label><nail x="128" y="32"/><nail x="-192" y="32"/></transition><transition controllable="false" action=""><source ref="id29"/><target ref="id29"/><label kind="select" x="-64" y="-272">r0 : int[0,1],
+r1 : int[0,1],
+r2 : int[0,1]</label><label kind="guard" x="-184" y="-248">red_sky == false</label><label kind="synchronisation" x="-152" y="-264">consult?</label><label kind="assignment" x="32" y="-272">free[0] = r0,
+free[1] = r1,
+free[2] = r2</label><nail x="-192" y="-224"/><nail x="128" y="-224"/></transition></template><system>// Place template instantiations here.
+slow = TL_Gr1();
+normal = TL_Gr2();
+high = TL_Gr3();
+sensors = Sensors();
+ctrl = Controller();
+tg = Traffic_Ground();
+tl_sky = TL_Sky();
+Observer = Obs();
+
+// List one or more processes to be composed into a system.
+system slow, normal, high, sensors, ctrl, tg, tl_sky, Observer;
+</system></nta>

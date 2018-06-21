@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <title>Projet embedded systems design</title>
+    <link href="https://fonts.googleapis.com/css?family=Cinzel" rel="stylesheet">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.0/css/bootstrap.min.css">
+    <link rel="stylesheet" href="css/animate.css">
+    <link rel="stylesheet" href="css/main.css">
+</head>
+<body>
+    <h1>Piste de décollage de voitures autonomes - SkyWalkers &trade;</h1>
+
+    <div class="container-fluid">
+        <main class="row p-1">
+            <div id="road-side" class="col-sm-6 bg-side">
+                <h2>Vue de côté</h2>
+                <img src="img/bg-side.jpg">
+                <img id="tl-sky" class="animate-tl" src="img/tl-sky-green.png">
+
+                <img id="sensor-0" class="sensor" src="img/sensor-green.PNG">
+                <img id="sensor-1" class="sensor" src="img/sensor-green.PNG">
+                <img id="sensor-2" class="sensor" src="img/sensor-green.PNG">
+
+                <img src="img/bg-side-layer2.png" style="display: block; z-index: 99; top:56px; left:10px;padding: 20px; position: absolute;">
+            </div>
+            <div id="road-top" class="col-sm-4 bg-top">
+                <h2>Vue de haut</h2>
+                <!-- On place les feux -->
+                <img id="tl-fast" class="tl tl-fast" src="img/tl-red.png" alt="">
+                <img id="tl-normal" class="tl tl-normal" src="img/tl-red.png" alt="">
+                <img id="tl-slow" class="tl tl-slow" src="img/tl-red.png" alt="">
+                <img src="img/bg-top.jpg">
+            </div>
+            <div class="col-sm-2">
+                <h2>État du système</h2>
+                <div id="state" style="text-align: left;"></div>
+            </div>
+        </main>
+        <h2>Crédits</h2>
+        <div class="row">
+            <div class="col-sm-3">
+                <h2>Voiture rapide</h2>
+                <div class="sketchfab-embed-wrapper p-1"><iframe width="100%" height="480" src="https://sketchfab.com/models/fce9f0e91f4c43f5ac0a98aff022d9fe/embed" frameborder="0" allow="autoplay; fullscreen; vr" mozallowfullscreen="true" webkitallowfullscreen="true"></iframe></div>
+            </div>
+            <div class="col-sm-3">
+                <h2>Voiture moyenne</h2>
+                <div class="sketchfab-embed-wrapper p-1"><iframe width="100%" height="480" src="https://sketchfab.com/models/9a89382135a84f459fc8e2f3316c5896/embed" frameborder="0" allow="autoplay; fullscreen; vr" mozallowfullscreen="true" webkitallowfullscreen="true"></iframe></div>
+            </div>
+            <div class="col-sm-3">
+                <h2>Voiture lente</h2>
+                <div class="sketchfab-embed-wrapper p-1"><iframe width="100%" height="480" src="https://sketchfab.com/models/44de9112ce564d35be97a06c302a2fe3/embed" frameborder="0" allow="autoplay; fullscreen; vr" mozallowfullscreen="true" webkitallowfullscreen="true"></iframe></div>
+            </div>
+
+            <div class="col-sm-3">
+                <h2>Feu aérien</h2>
+                <div class="sketchfab-embed-wrapper"><iframe width="100%" height="480" src="https://sketchfab.com/models/58425893f23d4ee691014e43fa12980c/embed" frameborder="0" allow="autoplay; fullscreen; vr" mozallowfullscreen="true" webkitallowfullscreen="true"></iframe></div>
+            </div>
+        </div>
+    </div>
+    <footer class="container-fluid footer">
+        &copy; By Mourad Akandouch &trade; & Mounir Hafif &trade;
+    </footer>
+    <script src="https://code.jquery.com/jquery-3.3.1.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.0/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.0/js/bootstrap.min.js"></script>
+    <script src="js/main.js"></script>
+    <script src="js/gui.js"></script>
+</body>
+</html>
